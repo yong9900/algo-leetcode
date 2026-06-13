@@ -10,6 +10,7 @@ public class NumberWaysAssignEdgeWeightsII_3559 {
 
     public int[] assignEdgeWeights(int[][] edges, int[][] queries) {
         int n = edges.length + 1;
+        // build adj list
         List<Integer>[] adj = new ArrayList[n + 1];
         for (int i = 1; i <= n; i++)
             adj[i] = new ArrayList<>();
@@ -49,6 +50,8 @@ public class NumberWaysAssignEdgeWeightsII_3559 {
         depth[node] = depth[parent] + 1;
 
         for (int i = 1; i < 20; i++) {
+            // i-th ancestor of node is
+            // 2^(i-1)-th ancestor of 2^(i-1)-th ancestor of node
             up[node][i] = up[up[node][i - 1]][i - 1];
         }
 
@@ -67,6 +70,7 @@ public class NumberWaysAssignEdgeWeightsII_3559 {
         }
 
         int diff = depth[u] - depth[v];
+        // move u up by diff
         for (int i = 0; i < 20; i++) {
             if (((diff >> i) & 1) == 1) {
                 u = up[u][i];
@@ -76,6 +80,9 @@ public class NumberWaysAssignEdgeWeightsII_3559 {
         if (u == v)
             return u;
 
+        // move u and v up together until their parents are the same
+        // during the move, if u's i-th ancestor is different from v's i-th ancestor,
+        // then the edge connecting u's i-th ancestor and u's (i-1)-th ancestor
         for (int i = 19; i >= 0; i--) {
             if (up[u][i] != up[v][i]) {
                 u = up[u][i];
