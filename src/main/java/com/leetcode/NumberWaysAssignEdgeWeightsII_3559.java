@@ -1,15 +1,19 @@
 package com.leetcode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class NumberWaysAssignEdgeWeightsII_3559 {
-    private int[][] up; 
+    private int[][] up;
     private int[] depth;
     private final int MOD = 1_000_000_007;
 
     public int[] assignEdgeWeights(int[][] edges, int[][] queries) {
         int n = edges.length + 1;
         List<Integer>[] adj = new ArrayList[n + 1];
-        for (int i = 1; i <= n; i++) adj[i] = new ArrayList<>();
-        
+        for (int i = 1; i <= n; i++)
+            adj[i] = new ArrayList<>();
+
         for (int[] edge : edges) {
             adj[edge[0]].add(edge[1]);
             adj[edge[1]].add(edge[0]);
@@ -17,37 +21,37 @@ public class NumberWaysAssignEdgeWeightsII_3559 {
 
         up = new int[n + 1][20];
         depth = new int[n + 1];
-        
+
         dfs(1, 0, adj);
 
         int q = queries.length;
         int[] ans = new int[q];
-        
+
         for (int i = 0; i < q; i++) {
             int u = queries[i][0];
             int v = queries[i][1];
-            
+
             if (u == v) {
                 ans[i] = 0;
                 continue;
             }
-            
+
             int lca = getLCA(u, v);
             int nEdges = depth[u] + depth[v] - 2 * depth[lca];
             ans[i] = power(2, nEdges - 1);
         }
-        
+
         return ans;
     }
 
     private void dfs(int node, int parent, List<Integer>[] adj) {
         up[node][0] = parent;
         depth[node] = depth[parent] + 1;
-        
+
         for (int i = 1; i < 20; i++) {
             up[node][i] = up[up[node][i - 1]][i - 1];
         }
-        
+
         for (int child : adj[node]) {
             if (child != parent) {
                 dfs(child, node, adj);
@@ -61,23 +65,24 @@ public class NumberWaysAssignEdgeWeightsII_3559 {
             u = v;
             v = temp;
         }
-        
+
         int diff = depth[u] - depth[v];
         for (int i = 0; i < 20; i++) {
             if (((diff >> i) & 1) == 1) {
                 u = up[u][i];
             }
         }
-        
-        if (u == v) return u;
-        
+
+        if (u == v)
+            return u;
+
         for (int i = 19; i >= 0; i--) {
             if (up[u][i] != up[v][i]) {
                 u = up[u][i];
                 v = up[v][i];
             }
         }
-        
+
         return up[u][0];
     }
 
@@ -85,7 +90,8 @@ public class NumberWaysAssignEdgeWeightsII_3559 {
         long res = 1;
         base = base % MOD;
         while (exp > 0) {
-            if ((exp % 2) == 1) res = (res * base) % MOD;
+            if ((exp % 2) == 1)
+                res = (res * base) % MOD;
             base = (base * base) % MOD;
             exp /= 2;
         }
